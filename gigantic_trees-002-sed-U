@@ -1,0 +1,3 @@
+#! /bin/bash
+
+sed -e 's/U/X/g' output/1-AGS-all_TRPs-blastp_X_species16.aa  > output/2-AGS-all_TRPs-blastp_X_species16.aa

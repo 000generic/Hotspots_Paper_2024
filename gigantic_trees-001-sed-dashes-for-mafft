@@ -1,0 +1,4 @@
+#! /bin/bash
+
+cp ../../../homologs-all_trps/blastp/output/17-AGS_blastp-rgs-TRPs_X_species16.aa output/17-AGS_blastp-rgs-TRPs_X_species16.fasta
+sed -e 's/-/_/g' ../../../homologs-all_trps/blastp/output/17-AGS_blastp-rgs-TRPs_X_species16.aa > output/1-AGS-all_TRPs-blastp_X_species16.aa

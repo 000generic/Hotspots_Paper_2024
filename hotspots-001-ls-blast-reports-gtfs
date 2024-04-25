@@ -1,0 +1,4 @@
+#! /bin/bash
+
+ls -1 ../../../blast/output/blast* > output/1-blast-reports-self_X_self
+ls -1 ../../../species16/gffs/USEME-species16-gffs/*gtf > output/1-gtfs-parsed-for-genome-positions-of-genes

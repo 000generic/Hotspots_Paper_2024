@@ -1,0 +1,3 @@
+#! /bin/bash
+
+mafft  --originalseqonly --maxiterate 1000 --reorder  --bl 45 --thread 15 output/2-AGS-all_TRPs-blastp_X_species16.aa > output/3-AGS-all_TRPs-blastp_X_species16.mafft

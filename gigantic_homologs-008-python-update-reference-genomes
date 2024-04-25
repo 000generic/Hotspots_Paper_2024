@@ -1,0 +1,118 @@
+#! python
+
+
+##### USER INPUT
+input_reports = open( 'output/7-list-reports', 'r' )
+input_fastas = open( 'output/7-list-rgs-projectdb-fastas', 'r' )
+input_rgsfasta = open( 'input/rgs-trps.aa', 'r' )
+output_map = open( 'output/8-map-source-to-reference-identifiers', 'a' )
+
+model_species = [ 'human', 'fly', 'worm' ]
+
+###### BEING SCRIPT 
+# read in reference gene header identifier and sequence into dictionary
+rgs_seq = {}
+for next_line in input_rgsfasta:
+
+    if next_line[ 0 ] == '>':
+
+        identifier = next_line[ 1:-1 ].split( ' ' )[ 0 ]
+        rgs_seq[ identifier ] = ''
+    else:
+
+        rgs_seq[ identifier ] = rgs_seq[ identifier ] + next_line[ :-1 ]
+
+# read rgs query and rgs genome top hit into dictionary
+gengene_refgene = {}
+rgs_genes = []
+gengenes = []
+
+for next_report in input_reports:
+    
+    input_report = open( next_report[ :-1 ], 'r' )
+    
+    model_name = ""
+    for model in model_species:
+        if model in next_report:
+            model_name = model
+            break
+
+    for next_hit in input_report:
+
+        info = next_hit.split( '\t' )
+        refgene = info[ 0 ]
+        gengene = info[ 1 ]
+        name = refgene.split( '-' )[ 1 ]
+        
+        if name == model_name:
+
+            if (refgene in rgs_genes) or (gengene in gengenes):
+
+                pass
+
+            else:
+
+                gengene_refgene[ gengene ] = refgene
+                rgs_genes.append( refgene )
+                gengenes.append( gengene )
+
+        else:
+
+            pass
+            
+    input_report.close()
+
+
+# read in RGS genome and replace rgs genes (top hit in blast of rgs _X_ rgs genome) with rgs header and sequence
+header_seq = {}
+for next_fasta in input_fastas:
+
+    input_fasta = open( next_fasta[ :-1 ], 'r' )
+    output_name = 'output/8-' + next_fasta[ :-1 ].split( '/' )[ -1 ] + '-rgs'
+    output_fasta = open( output_name, 'w' )
+
+    for next_line in input_fasta:
+
+        if next_line[ 0 ] == '>':
+
+            count = 0
+            
+            header_info = next_line[ 1:-1 ]
+
+            if header_info in gengene_refgene.keys():
+                
+                count = 1
+                gengene = header_info
+                refgene = gengene_refgene[ gengene ]
+                
+                header = '>' + refgene + '\n'
+                output_fasta.write( header )
+
+                
+                output = gengene + '\t' + refgene + '\n'
+                output_map.write( output )                
+                
+            else:
+
+                header = next_line
+                output_fasta.write( header )
+                
+        else:
+
+            if count == 0:
+
+                sequence = next_line
+                output_fasta.write( sequence )
+
+            else:
+
+                sequence = rgs_seq[ refgene ] + '\n'
+                output_fasta.write( sequence )
+
+    input_fasta.close()
+    output_fasta.close()
+
+input_reports.close()
+input_fastas.close()
+input_rgsfasta.close()
+output_map.close()

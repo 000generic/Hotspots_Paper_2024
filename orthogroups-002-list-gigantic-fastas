@@ -1,0 +1,5 @@
+#! /bin/bash
+
+# fasttree
+ls -1 ../gigantic/trees-all_trps/blastp/*/output/*fasttree  > output/2-list-species16-gigantic-trees
+

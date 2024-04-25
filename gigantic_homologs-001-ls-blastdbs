@@ -1,0 +1,6 @@
+#! /bin/bash
+
+cp ../../rgs/rgs-TRPs-human-fly-worm-2021dec03.fasta input/rgs-trps.aa &&
+
+ls -1 ../../../species16/proteomes/USEME-species16-pep-fastas/*pep > output/1-list-projectdb-blastdbs
+ls -1 input/rgs*.aa > output/1-list-rgs

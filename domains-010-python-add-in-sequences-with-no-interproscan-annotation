@@ -1,0 +1,123 @@
+#! python
+
+input_fastas = open( 'output/1-list-fastas', 'r' )
+input_data_7 = open( 'output/7-summary-sequence-annotation-counts', 'r' )
+input_data_8 = open( 'output/9-list-parsed-interproscan-files_8', 'r' )
+output_data_7 = open( 'output/10-species-summary-sequence-annotation-counts', 'w' )
+
+species_sequences = {}
+sequences_seqids = {}
+for next_fasta in input_fastas:
+    fasta_path = next_fasta[ :-1 ]
+    input_fasta = open( fasta_path, 'r' )
+
+    for next_line in input_fasta:
+        if next_line[ 0 ] == '>':
+            identifier = next_line[ 1:-1 ]
+            species = next_line.split( '-' )[ 5 ]
+            seqid = identifier.split( '-' )[ -1 ]
+            sequences_seqids[ identifier ] = seqid
+            
+            if species in species_sequences.keys():
+                species_sequences[ species ].append( identifier )
+            else:
+                species_sequences[ species ] = []
+                species_sequences[ species ].append( identifier )
+
+# Species GIGANTIC ID     Annotation Tool Homo    Drosophila      Caenorhabditis  Capitella       Phoronis        Lingula Acanthopleura   Nautilus        Argonauta       Octopus Cyclina Crassostrea     Mizuhopecten    Lottia  Gigantopelta    Pomacea    Achatina        Elysia  Aplysia
+species_seqid_data = {}
+for next_line in input_data_7:
+
+    info = next_line[ :-1 ].split( '\t' )
+    species = info [ 0 ]
+    seqid = info[ 1 ]
+    tool = info[ 2 ]
+    data = next_line[ :-1 ]
+
+    if species in species_seqid_data.keys():
+        if seqid in species_seqid_data[ species ].keys():
+            species_seqid_data[ species ][ seqid ].append( data ) 
+        else:
+            species_seqid_data[ species ][ seqid ] = []
+            species_seqid_data[ species ][ seqid ].append( data )
+    else:
+        species_seqid_data[ species ] = {}
+        species_seqid_data[ species ][ seqid ] = []
+        species_seqid_data[ species ][ seqid ].append( data )
+
+species_NA = {}
+for next_species in sorted( species_sequences.keys() ):
+    species_NA[ next_species ] = []
+    for next_seqid in species_sequences[ next_species ]:
+        if next_seqid not in species_seqid_data[ next_species ].keys():
+            species_NA[ next_species ].append( next_seqid )
+            
+NA_counts = ''
+for next_species in sorted( species_NA.keys() ):
+    NA_count = str( len( species_NA[ next_species ] ) )
+    NA_counts = NA_counts + NA_count + '\t'
+NA_counts = NA_counts[ :-1 ]
+
+species_All = [ 'Homo', 'Drosophila', 'Caenorhabditis', 'Capitella', 'Phoronis', 'Lingula', 'Acanthopleura', 'Nautilus', 'Argonauta', 'Octopus', 'Cyclina', 'Crassostrea', 'Mizuhopecten', 'Lottia', 'Gigantopelta', 'Pomacea', 'Achatina', 'Elysia', 'Aplysia' ]
+
+output = ''
+for next_species in species_All:
+    output = output + next_species + '\t'
+output = output[ :-1 ] + '\n'
+output_data_7.write( output )
+
+for next_species in species_All:
+    
+    species_NA[ next_species ] = {}
+
+    for next_seqid in species_sequences[ next_species ]:
+        if next_seqid in species_seqid_data[ next_species ].keys():
+            next_datas = species_seqid_data[ next_species ][ next_seqid ]
+            for next_data in next_datas:
+                output = next_data + '\n'
+                output_data_7.write( output )
+        else:
+            output = species + '\t' + next_seqid + '\t' + 'NA' + '\t' + NA_counts + '\n'
+            output_data_7.write( output )
+
+# Aplysia Pfam    gigantic20220627164247_seq0006140675aa  PF00001 7tm_1 7 transmembrane receptor (rhodopsin family)       287     72      122     922     180     362     378     235     151     191     482     464     364     276     476     431     534     316     400
+
+for next_file in input_data_8:
+
+    input_path = next_file[ :-1 ]
+    input_file = open( input_path, 'r' )
+    info_path = input_path.split( '/' )
+    output_path = 'output/10-' + info_path[ -1 ][ 2: ]
+    output_file = open( output_path, 'w' )
+    
+    seqids_data = {}
+    for next_line in input_file:
+        info = next_line.split( '\t' )
+        next_species = info[ 0 ]
+        next_tool = info[ 1 ]
+        next_seqid = info[ 2 ]
+
+        if next_seqid in seqids_data.keys():
+            seqids_data[ next_seqid ].append( next_line )
+        else:
+            seqids_data[ next_seqid ] = []
+            seqids_data[ next_seqid ].append( next_line )
+            
+    for next_sequence in species_sequences[ next_species ]:
+        
+        fasta_seqid = sequences_seqids[ next_sequence ]
+        
+        if fasta_seqid in seqids_data.keys():
+            for next_data in seqids_data[ fasta_seqid ]:
+                output = next_data
+                output_file.write( output )
+            
+        else:
+            output = next_species + '\t' + next_tool + '\t' + fasta_seqid + '\t'
+            for next_element in info[ 3: ]:
+                output = output + 'NA' + '\t'
+            output = output[ :-1 ] + '\n'
+            output_file.write( output )
+
+input_fastas.close()
+input_data_7.close()

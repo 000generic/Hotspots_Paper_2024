@@ -1,0 +1,17 @@
+#interproscan.sh --input ../../species16/proteomes/USEME-species16-pep-fastas/ACal.pep --cpu 16 --goterms --disable-precalc --formats tsv -appl Pfam Panther && 
+#interproscan.sh --input ../../species16/proteomes/USEME-species16-pep-fastas/CEle.pep --cpu 16 --goterms --disable-precalc --formats tsv -appl Pfam Panther && 
+#interproscan.sh --input ../../species16/proteomes/USEME-species16-pep-fastas/CGig.pep --cpu 16 --goterms --disable-precalc --formats tsv -appl Pfam Panther && 
+#interproscan.sh --input ../../species16/proteomes/USEME-species16-pep-fastas/CSqu.pep --cpu 16 --goterms --disable-precalc --formats tsv -appl Pfam Panther && 
+#interproscan.sh --input ../../species16/proteomes/USEME-species16-pep-fastas/CVir.pep --cpu 16 --goterms --disable-precalc --formats tsv -appl Pfam Panther && 
+#interproscan.sh --input ../../species16/proteomes/USEME-species16-pep-fastas/DMel.pep --cpu 16 --goterms --disable-precalc --formats tsv -appl Pfam Panther && 
+#interproscan.sh --input ../../species16/proteomes/USEME-species16-pep-fastas/GAeg.pep --cpu 16 --goterms --disable-precalc --formats tsv -appl Pfam Panther && 
+interproscan.sh --input ../../species16/proteomes/USEME-species16-pep-fastas/HSap.pep --cpu 28 --goterms --disable-precalc --formats tsv -appl Pfam Panther && 
+interproscan.sh --input ../../species16/proteomes/USEME-species16-pep-fastas/MAre.pep --cpu 28 --goterms --disable-precalc --formats tsv -appl Pfam Panther && 
+interproscan.sh --input ../../species16/proteomes/USEME-species16-pep-fastas/MTro.pep --cpu 28 --goterms --disable-precalc --formats tsv -appl Pfam Panther && 
+interproscan.sh --input ../../species16/proteomes/USEME-species16-pep-fastas/OBim.pep --cpu 28 --goterms --disable-precalc --formats tsv -appl Pfam Panther && 
+interproscan.sh --input ../../species16/proteomes/USEME-species16-pep-fastas/OEdu.pep --cpu 28 --goterms --disable-precalc --formats tsv -appl Pfam Panther && 
+interproscan.sh --input ../../species16/proteomes/USEME-species16-pep-fastas/PCae.pep --cpu 28 --goterms --disable-precalc --formats tsv -appl Pfam Panther && 
+interproscan.sh --input ../../species16/proteomes/USEME-species16-pep-fastas/PMax.pep --cpu 28 --goterms --disable-precalc --formats tsv -appl Pfam Panther && 
+interproscan.sh --input ../../species16/proteomes/USEME-species16-pep-fastas/PPel.pep --cpu 28 --goterms --disable-precalc --formats tsv -appl Pfam Panther && 
+interproscan.sh --input ../../species16/proteomes/USEME-species16-pep-fastas/PVul.pep --cpu 28 --goterms --disable-precalc --formats tsv -appl Pfam Panther && 
+echo

@@ -1,0 +1,187 @@
+#! python
+
+input_parsed = open( 'output/6-list-interproscan-parsed', 'r' )
+output_tool_counts = open( 'output/7-species-summary-tool-annotation-counts-species', 'w' )
+output_sequences = open( 'output/7-species-summary-sequence-annotation-counts', 'w' )
+output_species = open( 'output/7-species-summary-species-tool-counts', 'w' )
+
+# generate data structures
+
+GSpp_gspp = {}
+GSpp_gspp[ 'HSap' ] = 'Homo_sapiens'
+GSpp_gspp[ 'DMel' ] = 'Drosophila_melanogaster'
+GSpp_gspp[ 'CEle' ] = 'Caenorhabditis_elegans'
+GSpp_gspp[ 'OBim' ] = 'Octopus_bimaculoides'
+GSpp_gspp[ 'PPel' ] = 'Patella_pellucida'
+GSpp_gspp[ 'PCae' ] = 'Patella_caerulea'
+GSpp_gspp[ 'PVul' ] = 'Patella_vulgata'
+GSpp_gspp[ 'CSqu' ] = 'Chrysomallon_squamiferum'
+GSpp_gspp[ 'GAeg' ] = 'Gigantopelta_aegis'
+GSpp_gspp[ 'ACal' ] = 'Aplysia_californica'
+GSpp_gspp[ 'MAre' ] = 'Mya_arenaria'
+GSpp_gspp[ 'PMax' ] = 'Pecten_maximus'
+GSpp_gspp[ 'MTro' ] = 'Mytilus_trossulus'
+GSpp_gspp[ 'OEdu' ] = 'Ostrea_edulis'
+GSpp_gspp[ 'CVir' ] = 'Crassostrea_virginica'
+GSpp_gspp[ 'CGig' ] = 'Crassostrea_gigas'
+
+
+tools = [ 'PANTHER', 'Pfam', 'GO' ] # skipping AntiFam
+species = [ 'Homo_sapiens', 'Drosophila_melanogaster', 'Caenorhabditis_elegans', 'Octopus_bimaculoides', 'Patella_pellucida', 'Patella_caerulea', 'Patella_vulgata', 'Chrysomallon_squamiferum', 'Gigantopelta_aegis', 'Aplysia_californica', 'Mya_arenaria', 'Pecten_maximus', 'Mytilus_trossulus', 'Ostrea_edulis', 'Crassostrea_virginica', 'Crassostrea_gigas' ]
+
+tools_species_anno_ids = {}
+
+for next_tool in tools:
+    tools_species_anno_ids[ next_tool ] = {}
+    for next_species in species:
+        tools_species_anno_ids[ next_tool ][ next_species ] = {}
+        
+# read parsed files into data structures
+
+# output/5-interproscan5-app-id-annotations-Metazoa-Annelida-Polychaeta-Order_unclassified14-Capitellidae-Capitella-teleta
+
+# [ Sequence Identifier ] [ InterProScan AntiFam ]        [ InterProScan CDD ]    [ InterProScan Coils ]  [ InterProScan FunFam ] [ InterProScan Gene3D ] [ InterProScan Hamap ]  [ InterProScan MobiDBLite ]     [ InterProScan PANTHER ]        [ InterProScan PIRSF ]     [ InterProScan PRINTS ] [ InterProScan Pfam ]   [ InterProScan ProSitePatterns ]        [ InterProScan ProSiteProfiles ]        [ InterProScan SFLD ]   [ InterProScan SMART ]  [ InterProScan SUPERFAMILY ]    [ InterProScan TIGRFAM ]   [ InterProScan GO ]
+
+for next_parsed in input_parsed:
+
+    # output/5-interproscan5-app-id-annotations-ACal
+    parsed_path = next_parsed[ :-1 ]
+    input_parsing = open( parsed_path, 'r' )
+
+    info_path = parsed_path.split( '-' )
+    next_GSpp = info_path[ -1 ]
+    next_species = GSpp_gspp[ next_GSpp ]
+    first = False
+    for next_line in input_parsing:
+        if first == False:
+            first = True
+        else:
+            info = next_line[ :-1 ].split( '\t' )
+            counter = -1
+            giganticid = info[ 0 ]
+            for next_tool_set in info[ 2:-1 ]:  # gigantic id already processed, skip antifam, and process GO separately
+                counter = counter + 1
+                next_tool = tools[ counter ]
+                next_tool_ids = next_tool_set.split( ', ' )
+                for next_tool_id in next_tool_ids:
+                    next_tool_info = next_tool_id.split( '_' )
+                    if len( next_tool_info ) > 2:
+                        next_tool_annotation = '_'.join( next_tool_info[ :-2 ] )
+                    else:
+                        next_tool_annotation = next_tool_info[ 0 ]
+                    
+                    if len( next_tool_id ) > 4: # greater than length of 'None'
+                        gigantic_toolid = giganticid + '___' + next_tool_id                        
+                        if next_tool_annotation in tools_species_anno_ids[ next_tool ][ next_species ].keys():
+                            tools_species_anno_ids[ next_tool ][ next_species ][ next_tool_annotation ].append( gigantic_toolid )
+                        else:
+                            tools_species_anno_ids[ next_tool ][ next_species ][ next_tool_annotation ] = []
+                            tools_species_anno_ids[ next_tool ][ next_species ][ next_tool_annotation ].append( gigantic_toolid )
+
+            next_go_set = info[ -1 ]
+            next_go_ids = next_go_set.split( ', ' )
+            next_tool = 'GO'
+            for next_go_id in next_go_ids:
+                next_go_info = next_go_id.split( '_' )
+                if len( next_go_info ) > 2:
+                    next_go_annotation = 'GO_' + '_'.join( next_go_ids[ 0 ].split( '_' )[ :-2 ] )
+                else:
+                    next_go_annotation = 'GO_' + next_go_info[ 0 ]
+
+                if len( next_go_id ) > 4: # greater than length of 'None'
+                    next_go_id = 'GO_' + next_go_id
+                    gigantic_goid = giganticid + '___' + next_go_id
+                    if next_go_annotation in tools_species_anno_ids[ next_tool ][ next_species ].keys():
+                        tools_species_anno_ids[ next_tool ][ next_species ][ next_go_annotation ].append( gigantic_goid )
+                    else:
+                        tools_species_anno_ids[ next_tool ][ next_species ][ next_go_annotation ] = []
+                        tools_species_anno_ids[ next_tool ][ next_species ][ next_go_annotation ].append( gigantic_goid )
+
+giganticid_anno = {}
+anno_species_count = {}
+
+species_tool_anno = {}
+for next_species in species:
+    species_tool_anno[ next_species ] = {}
+
+# count annotations per tool per species and read to output
+# tool per species per annotation
+for next_tool in sorted( tools_species_anno_ids.keys() ):
+    next_path = 'output/7-species-' + next_tool + '-counts-per-annotation-per-species'
+    output_tools_species_anno_counts = open( next_path, 'w' )
+    print( next_tool ) # remove
+    for next_species in sorted( tools_species_anno_ids[ next_tool ].keys() ):
+        tool_total = 0
+        print( next_species ) # remove
+        species_tool_anno[ next_species ][ next_tool ] = []
+        
+        for next_anno in sorted( tools_species_anno_ids[ next_tool ][ next_species ].keys() ):
+
+            species_tool_anno[ next_species ][ next_tool ].append( next_anno )
+
+            count = str( len( tools_species_anno_ids[ next_tool ][ next_species ][ next_anno ] ) )
+            output = next_tool + '\t' + next_species + '\t' + next_anno + '\t' + count + '\n'
+            output_tools_species_anno_counts.write( output )
+
+            tool_total = tool_total + int( count )
+
+            for identifier in tools_species_anno_ids[ next_tool ][ next_species ][ next_anno ]:
+                identifier_info = identifier.split( '___' )
+                gigantic_id = identifier_info[ 0 ]
+                
+                if gigantic_id in giganticid_anno.keys():
+                    giganticid_anno[ gigantic_id ].append( next_anno )
+                else:
+                    giganticid_anno[ gigantic_id ] = []
+                    giganticid_anno[ gigantic_id ].append( next_anno )
+
+            if next_anno in anno_species_count.keys():
+                    anno_species_count[ next_anno ][ next_species ] = count
+            else:
+                anno_species_count[ next_anno ] = {}
+                anno_species_count[ next_anno ][ next_species ] = count
+            
+        output = next_tool + '\t' + next_species + '\t' + str( tool_total ) + '\n'
+        output_tool_counts.write( output )
+    output_tools_species_anno_counts.close()
+
+output = 'Species' + '\t' + 'GIGANTIC ID' + '\t' + 'Annotation Tool' + '\t'
+for next_species in species:
+    output = output + next_species + '\t'
+output = output[ :-1 ] + '\n'
+output_sequences.write( output )
+
+for next_giganticid in giganticid_anno.keys():
+    species_current = next_giganticid.split( '__' )[ 0 ]
+    for next_anno in sorted( set( giganticid_anno[ next_giganticid ] ) ):
+        
+        output = species_current + '\t' + next_giganticid + '\t' + next_anno + '\t'
+
+        for next_species in species:
+            if next_species in anno_species_count[ next_anno ].keys():
+                count = anno_species_count[ next_anno ][ next_species ]
+            else:
+                count = 0
+            output = output + str( count ) + '\t'
+
+        output = output[ :-1 ] + '\n'
+        output_sequences.write( output )
+
+output = 'Specices' + '\t'
+for next_tool in sorted( species_tool_anno[ 'Homo_sapiens' ].keys() ):
+    output = output + next_tool + '\t'
+output = output[ :-1 ] + '\n'
+output_species.write( output )
+
+for next_species in species:
+    output = next_species + '\t'
+    for next_tool in sorted( species_tool_anno[ next_species ].keys() ):
+        anno_count = str( len( set( species_tool_anno[ next_species ][ next_tool ] ) ) )
+        output = output  + anno_count + '\t'
+    output = output[ :-1 ] + '\n'
+    output_species.write( output )
+        
+output_sequences.close()
+output_species.close()
+output_tool_counts.close()
+input_parsed.close()

@@ -1,0 +1,3 @@
+#! /bin/bash
+
+fasttree -spr 4 -mlacc 2 -slownni -gamma -boot 2000 -log output/6-log-AGS-all_TRPs-blastp_X_species16 output/4-AGS-all_TRPs-blastp_X_species16.clipkit-smartgap  > output/6-AGS-all_TRPs-blastp_X_species16.fasttree

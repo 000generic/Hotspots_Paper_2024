@@ -1,0 +1,7 @@
+#! /bin/bash
+
+cp ../species17/proteomes/USEME-species17-pep-fastas/*pep input &&
+
+ls input/* > output/1-list-fastas
+
+

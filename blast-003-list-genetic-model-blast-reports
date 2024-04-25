@@ -1,0 +1,5 @@
+#! /bin/bash
+
+ls -1 output/*genetic_models  > output/3-list-reports
+ls -1 ../species16/proteomes/USEME-species16-pep-fastas/*pep > output/3-list-fastas
+

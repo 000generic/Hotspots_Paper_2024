@@ -1,0 +1,30 @@
+#! python
+
+# input_list
+# localdb/projectdb-Metazoa-Nematoda-Chromadorea-Rhabditida-Onchocercidae-Brugia-malayi-6279-Bmal-4.0.fasta
+
+input_list = open( 'output/1-list-projectdb-blastdbs', 'r' )
+input_rgs = open( 'output/1-list-rgs', 'r' )
+output_command = open( '003-blastp_X_projectDB', 'w' )
+
+# ../../../species16/proteomes/USEME-species16-pep-fastas/ACal.pep
+for next_rgs in input_rgs:
+
+	rgs_fasta = next_rgs[ :-1 ] # ends up assigning to pore region in this case
+
+for next_line in input_list:
+
+	db_path = next_line[ :-1 ]
+	filename = next_line[ :-1 ].split( '/' )[ -1 ]
+	genus = filename[ 0 ]
+	species = filename[ 1:4 ]
+	gspp = genus + '-' + species
+	output = 'blastp -db ' + db_path  + ' -outfmt 6 -out output/3-blast-report-rgs_X_projectdb-' + gspp + ' -max_hsps 1 -query ' + rgs_fasta + ' -evalue 1e-3  &\n'
+	output_command.write( output )
+
+output = 'echo\n'
+output_command.write( output )
+
+input_list.close()
+input_rgs.close()
+output_command.close()

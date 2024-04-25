@@ -1,0 +1,120 @@
+#! python
+
+input_files = open( 'output/4-list-interproscan-tsvs', 'r' )
+input_fastas = open( 'output/1-list-fastas', 'r' )
+
+apps_redundant = [ ]
+seqids_gos = {}
+
+# Metazoa-Mollusca-Gastropoda-Aplysiida-Aplysiidae-Aplysia-californica-gigantic20220627164247_seq0006145488aa     84f1ffb9a864616ec3aa0e37433b6487        1152    PANTHER PTHR15377       TRANSCRIPTION ELONGATION REGULATOR 1    238     1123    8.0E-256   T       14-12-2022      IPR045148       Transcription elongation regulator 1-like       GO:0003712|GO:0070063
+
+seq_app_id = {}
+
+# read into dictionary all interproscan species annotations
+for next_file in input_files:
+
+    input_file = open( next_file[ :-1 ], 'r' )
+    
+    for next_line in input_file:
+        info = next_line[ :-1 ].split( '\t' )
+        seqid = info[ 0 ]
+        app = info [ 3 ]
+        apps_redundant.append( app )
+        identifier = info[ 4 ]
+        start = info[ 6 ]
+        if len( start ) == 0:
+            start = 'NA'
+        stop = info[ 7 ]
+        if len( stop ) == 0:
+            stop = 'NA'
+        
+        app_id = app + '_' + identifier + '_' + start + '_' + stop
+        if seqid in seq_app_id.keys():
+            seq_app_id[ seqid ].append( app_id )
+        else:
+            seq_app_id[ seqid ] = []
+            seq_app_id[ seqid ].append( app_id )
+
+        gos = info[ -1 ]
+        go_test = gos.split( 'O:' )
+        if len( go_test ) > 1:
+            go_info = gos.split( '|' )
+            for next_go in go_info:
+                go_details = next_go + '_' + start + '_' + stop
+                if seqid in seqids_gos.keys():
+                    seqids_gos[ seqid ].append( go_details )
+                else:
+                    seqids_gos[ seqid ] = []
+                    seqids_gos[ seqid ].append( go_details )
+
+for next_seqid in seqids_gos.keys():
+    seqids_gos[ next_seqid ] = list( set( seqids_gos[ next_seqid ] ) )
+
+apps = list( set( apps_redundant ) )
+    
+# collect seqids for all species and check for interproscan annotations
+for next_fasta in input_fastas:
+
+    # create filehandles for input and output
+    # ../../species16/proteomes/USEME-species16-pep-fastas/ACal.pep
+    input_fasta = open( next_fasta[ :-1 ], 'r' )
+    
+    file_name = next_fasta.split( '/' )[ -1 ]
+    core_name = file_name.split( '.' )[ 0 ]
+    new_file = 'output/5-interproscan5-app-id-annotations-' + core_name
+    output_info = open( new_file, 'w' )
+
+    # provide file structure details
+    output = '[ Sequence Identifier ]' + '\t'
+    for next_app in sorted( apps ):
+        output = output + '[ InterProScan ' + next_app + ' ]\t'
+    output = output + '[ InterProScan GO ]' + '\n'
+    output_info.write( output )
+
+    # process fasta file
+    for next_line in input_fasta:
+        if next_line[ 0 ] == '>': # check if its a header
+            seqid = next_line[ 1:-1 ]
+            output = seqid + '\t' # output interproscan annotations for the sequence
+            
+            if seqid in seq_app_id.keys(): # check if sequence has inteproscan annotation
+
+                for next_app in sorted( apps ): # go through apps of interest
+                    annotations = []
+                    for next_annotation in seq_app_id[ seqid ]: # check if app annotated the sequence
+                        info_annotation = next_annotation.split( '_' )
+                        if info_annotation[ 0 ] == next_app:
+                            annotations.append( next_annotation )
+                        else:
+                            pass
+
+                    if len( annotations ) == 0:
+                        output = output + 'None' +  '\t'
+                    else:
+                        app_annotations = ', '.join( annotations )
+                        output = output + app_annotations + '\t'
+
+                if seqid in seqids_gos.keys():
+                    gos_list = seqids_gos[ seqid ]
+                    gos = ', '.join( gos_list )
+                    output = output + gos + '\n'
+                else:
+                    output = output + 'None' + '\n'
+                output_info.write( output )
+                
+            else:
+                for next_app in apps:
+                    output = output + 'None' + '\t'
+                if seqid in seqids_gos.keys():
+                    gos_list = seqids_gos[ seqid ]
+                    gos = ', '.join( gos_list )
+                    output = output + gos + '\n'
+                else:
+                    output = output + 'None' + '\n'
+                output_info.write( output )
+        else:
+            pass
+    input_fasta.close()
+    output_info.close()
+input_files.close()
+input_fastas.close()

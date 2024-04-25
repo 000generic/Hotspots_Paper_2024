@@ -1,0 +1,28 @@
+#! python
+
+# USER INPUT
+
+# Please provide the name of your BUSCO  Mamba environment
+mamba_environment='busco-5.5.0' # Example: busco-5.5.0
+
+###
+###
+
+
+input_fastas = open( 'output/1-list-fastas', 'r')
+output_busco = open( '003-busco-T1-proteomes', 'w' )
+
+#  busco -i aequorea_victoria_zanfona_1.fasta --lineage_dataset metazoa_odb10 --mode genome -o 2-busco-metazoa-aequorea_victoria_zanfona_1 --out_path output --cpu 60 --force
+for next_fasta in input_fastas:
+
+    next_fasta = next_fasta[: -1 ]
+    fasta_name = next_fasta.split( '/' )[ -1 ]
+    core_id = fasta_name.split( '.' )[ 0 ]
+    output = 'busco -i ' + next_fasta + ' --lineage_dataset metazoa_odb10 --mode protein -o ' + core_id + ' --out_path output --cpu 30 --force && \n'
+    output_busco.write( output )
+
+output = 'echo\n'
+output_busco.write( output )
+
+input_fastas.close()
+output_busco.close()

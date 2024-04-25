@@ -1,0 +1,4 @@
+ #! /bin/bash
+
+orthofinder  -t 32 -f ../species16/proteomes/USEME-species16-pep-fastas/ -o output-species16-diamond-fasttree  -y -X -n species16-diamond-fasttree 
+#orthofinder -A mafft -M msa -S blast -f input-hotspots-paper -o output-hotspots-paper  -y -X --fewer-files -n species16-blast-fasttree

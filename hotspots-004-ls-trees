@@ -1,0 +1,6 @@
+#! /bin/bash
+
+ls -1 ../../../gigantic/trees-all_trps/blastp/*/output/*fasttree > output/4-list-trees-gigantic
+ls -1 ../../../gigantic/trees-all_trps/blastp/*/output/*orthogroups > output/4-list-trees-gigantic-orthogroups
+ls -1 ../../../species16/proteomes/USEME-species16-pep-fastas/*pep   > output/4-list-fastas
+

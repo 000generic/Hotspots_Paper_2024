@@ -1,0 +1,105 @@
+#! python 
+
+input_fastas = open( 'output/4-list-fastas', 'r' )
+input_N0 = open( 'output-species16-diamond-fasttree/Results_species16-diamond-fasttree/Phylogenetic_Hierarchical_Orthogroups/N0.tsv', 'r' )
+output_dark_matter = open( 'output/5-species16-orthofinder-dark-matter-seqids', 'w' )
+output_counts = open( 'output/5-species16-orthofinder-dark-matter-counts', 'w' )
+
+GSpp_gspp = {}
+GSpp_gspp[ 'HSap' ] = 'Homo_sapiens'
+GSpp_gspp[ 'DMel' ] = 'Drosophila_melanogaster'
+GSpp_gspp[ 'CEle' ] = 'Caenorhabditis_elegans'
+GSpp_gspp[ 'OBim' ] = 'Octopus_bimaculoides'
+GSpp_gspp[ 'PPel' ] = 'Patella_pellucida'
+GSpp_gspp[ 'PCae' ] = 'Patella_caerulea'
+GSpp_gspp[ 'PVul' ] = 'Patella_vulgata'
+GSpp_gspp[ 'CSqu' ] = 'Chrysomallon_squamiferum'
+GSpp_gspp[ 'GAeg' ] = 'Gigantopelta_aegis'
+GSpp_gspp[ 'ACal' ] = 'Aplysia_californica'
+GSpp_gspp[ 'MAre' ] = 'Mya_arenaria'
+GSpp_gspp[ 'PMax' ] = 'Pecten_maximus'
+GSpp_gspp[ 'MTro' ] = 'Mytilus_trossulus'
+GSpp_gspp[ 'OEdu' ] = 'Ostrea_edulis'
+GSpp_gspp[ 'CVir' ] = 'Crassostrea_virginica'
+GSpp_gspp[ 'CGig' ] = 'Crassostrea_gigas'
+
+fasta_gspp_seqids = {}
+for fasta_file in input_fastas:
+	input_fasta = open( fasta_file.strip(), 'r' )
+	GSpp = fasta_file.split( '/' )[ -1 ].split( '.' )[ 0 ]
+	gspp = GSpp_gspp[ GSpp ]
+	fasta_gspp_seqids[ gspp ] = []
+	for data in input_fasta:
+		if data[ 0 ] == '>':
+			seqid = data[ 1:-1 ]
+			fasta_gspp_seqids[ gspp ].append( seqid )
+	input_fasta.close()
+
+#HOG     OG      Gene Tree Parent Clade  ACal    CEle    CGig    CSqu    CVir    DMel    GAeg    HSap    MAre    MTro    OBim    OEdu    PCae    PMax    PPel    PVul
+# N0.HOG0000000   OG0000000       n3                                              Drosophila_melanogaster__Dmel_CG1652__NP_001163102.1, Drosophila_melanogaster__Dmel_CG1656__NP_652633.1         Homo_sapiens__CLEC2D__NP_001004419.1, Homo_sapiens__CLEC2A__NP_001124183.1, Homo_sapiens__CLEC9A__NP_997228.1, Homo_sapiens__CD72__XP_006716956.1                Mytilus_trossulus__LOC134686170__XP_063401915.1                                         
+
+N0_gspp_seqids_dark_matter = {}
+for GSpp in GSpp_gspp.keys():
+	gspp = GSpp_gspp[ GSpp ]
+	N0_gspp_seqids_dark_matter[ gspp ] = []
+
+orthogroup_seqids = []
+for data in input_N0:
+
+	if data[ 0 ] == 'H':
+		continue
+
+	species_seqids =  data.strip().split( '\t' )[ 3: ]
+
+	test_human = False
+	test_fly = False
+	test_worm = False
+
+	current_gspp_seqids = {}
+	for GSpp in GSpp_gspp.keys():
+		gspp = GSpp_gspp[ GSpp ]
+		current_gspp_seqids[ gspp ] = []
+
+	for species in species_seqids:
+		for seqid in species.split( ', ' ):
+			gspp = seqid.split( '__' )[ 0 ]
+
+			if len( seqid ) > 2:
+				orthogroup_seqids.append( seqid )
+
+				if gspp == 'Homo_sapiens':
+					test_human = True
+				if gspp == 'Drosophila_melanogaster':
+					test_fly = True
+				if gspp == 'Caenorhabditis_elegans':
+					test_worm = True
+
+				current_gspp_seqids[ gspp ].append( seqid )
+
+	if test_human == False and test_fly == False and test_worm == False:
+		for dark_gspp in current_gspp_seqids.keys(): 
+			if len( current_gspp_seqids[ dark_gspp ] ) > 0:
+				for dark_seqid in current_gspp_seqids[ dark_gspp ]:
+					N0_gspp_seqids_dark_matter[ dark_gspp ].append( dark_seqid )
+
+output_counts.write( 'Genus_species' + '\t' + 'Dark Singleton Sequences' + '\t' + 'Dark Orthogroup Sequences' + '\t' +  'Total Dark Sequences' + '\n' )
+
+for gspp in fasta_gspp_seqids.keys():
+	dark_matter_count =  0
+	print( gspp ) # remove
+	for seqid in fasta_gspp_seqids[ gspp ]:
+		if seqid not in orthogroup_seqids:
+			dark_matter_count += 1
+			output_dark_matter.write( gspp + '\t' + seqid + '\n')
+	dark_singletons = dark_matter_count
+	for seqid in N0_gspp_seqids_dark_matter[ gspp ]:
+		dark_matter_count += 1
+		output_dark_matter.write( gspp + '\t' + seqid + '\n')
+	dark_no_models_orthogroups =  dark_matter_count - dark_singletons
+	output_counts.write( gspp + '\t' + str( dark_singletons ) + '\t' + str( dark_no_models_orthogroups ) + '\t' + str( dark_matter_count )  + '\n' )
+
+input_fastas.close()
+input_N0.close()
+output_dark_matter.close()
+output_counts.close()
+

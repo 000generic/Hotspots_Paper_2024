@@ -1,0 +1,66 @@
+#! python 
+# rgs73-worm-TRPA_Cele_TRPA-TRPA2_1_481-uniprotQ21517-extraction_51_366   Metazoa-Chordata-Coelacanthimorpha-Coelacanthiformes-Coelacanthidae-Latimeria-chalumnae-pdb0000292542   26.036  169     98      4       140     299     846     996     3.39e-05        44.4
+
+input_fastas = open( 'output/4-list-fastas', 'r' )
+input_reports = open( 'output/4-list-reports', 'r' )
+output_geneset_gspp = open( 'output/5-blastp-hits.fasta', 'w')
+output_geneset_gspp_sub = open( 'output/5-blastp-pore-region-hits.fasta', 'w')
+
+gene_seq = {}
+gene_coordinates = {}
+for next_fasta in input_fastas:
+    
+    fasta = next_fasta[ :-1 ]
+    input_fasta = open( fasta, 'r' )
+    
+    for next_line in input_fasta:
+
+        if next_line[ 0 ] == '>':
+            
+            header = next_line[ 1:-1 ]
+            gene_seq[ header ] = ''
+
+        else:
+
+            sequence = next_line[ :-1 ]
+            gene_seq[ header ] = gene_seq[ header ] + sequence
+
+    input_fasta.close()
+
+for next_report in input_reports:
+
+    all_hits = []
+    report = next_report[ :-1 ]
+    input_report = open( report, 'r' )
+ 
+    for next_line in input_report:
+
+        report_info = next_line.split( '\t' )
+        gene_id = report_info[ 1 ]
+        all_hits.append( gene_id )
+        coordinate_1 = int( report_info[ 8 ] ) - 1
+        coordinate_2 = int( report_info[ 9 ] ) - 1
+        gene_coordinates[ gene_id ] = ( coordinate_1, coordinate_2 )
+        
+    unique_hits = list( set( all_hits ) )
+
+    for next_hit in unique_hits:
+        
+        gene_id = next_hit
+        sequence = gene_seq[ gene_id ]
+        coordinate_1 = gene_coordinates[ gene_id ][ 0 ]
+        coordinate_2 = gene_coordinates[ gene_id ][ 1 ]
+        subsequence = sequence[ coordinate_1 : coordinate_2 ] 
+
+        output = '>' + gene_id + '\n' + sequence + '\n'
+        output_geneset_gspp.write( output )
+        
+        output_sub = '>' + gene_id + '\n' + subsequence + '\n'
+        output_geneset_gspp_sub.write( output_sub )
+
+    input_report.close()
+
+input_fastas.close()
+input_reports.close()
+output_geneset_gspp.close()
+output_geneset_gspp_sub.close()

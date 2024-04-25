@@ -1,0 +1,88 @@
+#! python
+
+input_N0 = open( 'output-species16-diamond-fasttree/Results_species16-diamond-fasttree/Phylogenetic_Hierarchical_Orthogroups/N0.tsv', 'r' )
+input_gigantic_map_rgs_source = open( '../gigantic/homologs-all_trps/blastp/output/8-map-source-to-reference-identifiers', 'r' )
+input_trees = open( 'output/2-list-species16-gigantic-trees', 'r' )
+input_fasta = open( '../gigantic/homologs-all_trps/blastp/output/17-AGS_blastp-rgs-TRPs_X_species16.aa', 'r' )
+output_map = open( 'output/3-map-gigantic_sequence_to_orthofinder', 'w' )
+
+sequences_hogs = {}
+# N0.HOG0000001   OG0000000       n28             Caenorhabditis_elegans__CELE_F31D4.4__NP_508027.2                                                               Mytilus_trossulus__LOC134719358__XP_063438434.1                 Patella_caerulea__SNE40_023443__KAK6166829.1                           
+for orthogroup in input_N0:
+	if orthogroup[ 0 ] == '#':
+		continue
+
+	info_orthogroup = orthogroup[ :-1 ].split( '\t' )
+	hog = info_orthogroup[ 0 ]
+	all_species = info_orthogroup[ 3: ]
+	for species in all_species:
+		info_species = species.split( ', ' )
+		for sequence in info_species:
+			if len( sequence ) > 1:
+				sequences_hogs[ sequence ] = hog
+
+rgss_gigantics = {}
+# Homo_sapiens__MCOLN2__XP_005270776.1    rgs-human-TRPML-TRPML-MCLN2-uniprotQ8IZK6
+for data in input_gigantic_map_rgs_source:
+	info_rgs = data[ :-1 ].split( '\t' )
+	gigantic = info_rgs[ 0 ]
+	rgs = info_rgs[ 1 ]
+	rgss_gigantics[ rgs ] = gigantic
+
+sequences = []
+for data in input_fasta:
+	if  data[ 0 ] == '>':
+		sequence = data[ 1:-1 ]
+		sequences.append( sequence )
+
+count = 0
+sequences_singletonIDS = {}
+for tree_file in input_trees:
+
+	input_tree = open( tree_file[ :-1 ], 'r'  )
+	new_tree = tree_file[ :-1 ] + '_orthogroups'
+	output_tree = open( new_tree, 'w' )
+
+	for tree in input_tree:
+
+		for sequence in sequences:
+			test_seq = False
+			test_rgs = False
+			clean_sequence = '_'.join( sequence.split( '-' ) )
+			clean_sequence = 'X'.join( clean_sequence.split( 'U' ) )
+
+			if len( tree.split( clean_sequence ) ) > 1:
+				if sequence in sequences_hogs.keys():  # gigantic ids
+					hog = sequences_hogs[ sequence ]
+					new_id = sequence + '__ORTHOGROUP_' + hog
+					test_seq = True
+
+				if sequence in rgss_gigantics.keys(): # rgs ids
+					rgs = sequence
+					sequence = rgss_gigantics[ rgs ]
+					if sequence in sequences_hogs.keys():
+						hog = sequences_hogs[ sequence ]
+						new_id = rgs + '__ORTHOGROUP_' + hog
+						test_seq = True
+
+				if test_seq == False:
+					if sequence not in sequences_singletonIDS.keys():
+						count += 1
+						new_id = sequence + '__ORTHOGROUP_singleton' + str( count )    # in GIGANTIC pipeline singleton ids are assigned but here for now I am working with OrthoFinder N0 directly so I have to assign them
+						sequences_singletonIDS[ sequence ] = new_id
+					else:
+						new_id = sequences_singletonIDS[ sequence ]
+
+				tree = new_id.join( tree.split( clean_sequence ) )
+
+			else:
+				continue
+				#print( 'Error!'  + sequence + ' : '  + fasta )
+
+		output_tree.write( tree )
+		output_tree.close()
+
+input_N0.close()
+input_gigantic_map_rgs_source.close()
+input_trees.close()
+output_map.close()

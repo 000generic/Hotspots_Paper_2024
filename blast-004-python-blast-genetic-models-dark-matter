@@ -1,0 +1,66 @@
+#! python
+
+input_fastas = open( 'output/3-list-fastas', 'r' )
+input_reports = open( 'output/3-list-reports', 'r' )
+output_counts = open( 'output/4-blast-genetic-models-dark-matter-counts', 'w' )
+output_dark_matter = open( 'output/4-blast-genetic-models-dark-matter-seqids', 'w' )
+
+GSpp_gspp = {}
+GSpp_gspp[ 'HSap' ] = 'Homo_sapiens'
+GSpp_gspp[ 'DMel' ] = 'Drosophila_melanogaster'
+GSpp_gspp[ 'CEle' ] = 'Caenorhabditis_elegans'
+GSpp_gspp[ 'OBim' ] = 'Octopus_bimaculoides'
+GSpp_gspp[ 'PPel' ] = 'Patella_pellucida'
+GSpp_gspp[ 'PCae' ] = 'Patella_caerulea'
+GSpp_gspp[ 'PVul' ] = 'Patella_vulgata'
+GSpp_gspp[ 'CSqu' ] = 'Chrysomallon_squamiferum'
+GSpp_gspp[ 'GAeg' ] = 'Gigantopelta_aegis'
+GSpp_gspp[ 'ACal' ] = 'Aplysia_californica'
+GSpp_gspp[ 'MAre' ] = 'Mya_arenaria'
+GSpp_gspp[ 'PMax' ] = 'Pecten_maximus'
+GSpp_gspp[ 'MTro' ] = 'Mytilus_trossulus'
+GSpp_gspp[ 'OEdu' ] = 'Ostrea_edulis'
+GSpp_gspp[ 'CVir' ] = 'Crassostrea_virginica'
+GSpp_gspp[ 'CGig' ] = 'Crassostrea_gigas'
+
+
+gspp_dark_matter = {}
+reports_gspp_seqids = {}
+for GSpp in GSpp_gspp.keys():
+	gspp = GSpp_gspp[ GSpp ]
+	reports_gspp_seqids[ gspp ] = []
+	gspp_dark_matter [ gspp ] = []
+
+for report_file in input_reports:
+	print( report_file[ :-1 ] )  # monitoring
+	input_report = open( report_file[ :-1 ], 'r' )
+
+	previous_query = ''
+	for data in input_report:
+		query = data.split( '\t' )[ 0 ]
+		if query != previous_query:
+			previous_query = query
+			gspp = query.split( '__' )[ 0 ]
+			reports_gspp_seqids[ gspp ].append( query )
+	input_report.close()
+
+for  fasta_file in input_fastas:
+	input_fasta = open( fasta_file[ :-1 ], 'r' )
+	for data in input_fasta:
+		if data[ 0 ]== '>':
+			seqid = data[ 1:-1 ]
+			gspp = data[ 1: ].split( '__' )[ 0 ]
+			if seqid not in reports_gspp_seqids[ gspp ]:
+				gspp_dark_matter [ gspp ].append( seqid )
+	input_fasta.close()
+
+for gspp in sorted( gspp_dark_matter.keys() ):
+	
+	dark_matter_count = str( len( gspp_dark_matter[ gspp ] ) )
+	output_counts.write( gspp + '\t' + dark_matter_count + '\n' )
+	for seqid in  gspp_dark_matter[ gspp ]:
+		output_dark_matter.write( gspp + '\t' + seqid + '\n' )
+
+
+output_counts.close()
+output_dark_matter.close()

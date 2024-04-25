@@ -1,0 +1,3 @@
+#! /bin/bash
+
+clipkit -l -m smart-gap output/3-AGS-all_TRPs-blastp_X_species16.mafft -o output/4-AGS-all_TRPs-blastp_X_species16.clipkit-smartgap

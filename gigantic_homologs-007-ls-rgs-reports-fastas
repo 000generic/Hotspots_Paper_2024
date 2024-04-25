@@ -1,0 +1,7 @@
+#! /bin/bash
+
+ls output/6*genome* > output/7-list-reports
+
+ls ../../../species16/proteomes/USEME-species16-pep-fastas/HSap.pep > output/7-list-rgs-projectdb-fastas
+ls ../../../species16/proteomes/USEME-species16-pep-fastas/DMel.pep >> output/7-list-rgs-projectdb-fastas
+ls ../../../species16/proteomes/USEME-species16-pep-fastas/CEle.pep >> output/7-list-rgs-projectdb-fastas

@@ -1,0 +1,17 @@
+blastp -db ../../../species16/proteomes/USEME-species16-pep-fastas/ACal.pep -outfmt 6 -out output/3-blast-report-rgs_X_projectdb-A-Cal -max_hsps 1 -query input/rgs-trps.aa -evalue 1e-3  &
+blastp -db ../../../species16/proteomes/USEME-species16-pep-fastas/CEle.pep -outfmt 6 -out output/3-blast-report-rgs_X_projectdb-C-Ele -max_hsps 1 -query input/rgs-trps.aa -evalue 1e-3  &
+blastp -db ../../../species16/proteomes/USEME-species16-pep-fastas/CGig.pep -outfmt 6 -out output/3-blast-report-rgs_X_projectdb-C-Gig -max_hsps 1 -query input/rgs-trps.aa -evalue 1e-3  &
+blastp -db ../../../species16/proteomes/USEME-species16-pep-fastas/CSqu.pep -outfmt 6 -out output/3-blast-report-rgs_X_projectdb-C-Squ -max_hsps 1 -query input/rgs-trps.aa -evalue 1e-3  &
+blastp -db ../../../species16/proteomes/USEME-species16-pep-fastas/CVir.pep -outfmt 6 -out output/3-blast-report-rgs_X_projectdb-C-Vir -max_hsps 1 -query input/rgs-trps.aa -evalue 1e-3  &
+blastp -db ../../../species16/proteomes/USEME-species16-pep-fastas/DMel.pep -outfmt 6 -out output/3-blast-report-rgs_X_projectdb-D-Mel -max_hsps 1 -query input/rgs-trps.aa -evalue 1e-3  &
+blastp -db ../../../species16/proteomes/USEME-species16-pep-fastas/GAeg.pep -outfmt 6 -out output/3-blast-report-rgs_X_projectdb-G-Aeg -max_hsps 1 -query input/rgs-trps.aa -evalue 1e-3  &
+blastp -db ../../../species16/proteomes/USEME-species16-pep-fastas/HSap.pep -outfmt 6 -out output/3-blast-report-rgs_X_projectdb-H-Sap -max_hsps 1 -query input/rgs-trps.aa -evalue 1e-3  &
+blastp -db ../../../species16/proteomes/USEME-species16-pep-fastas/MAre.pep -outfmt 6 -out output/3-blast-report-rgs_X_projectdb-M-Are -max_hsps 1 -query input/rgs-trps.aa -evalue 1e-3  &
+blastp -db ../../../species16/proteomes/USEME-species16-pep-fastas/MTro.pep -outfmt 6 -out output/3-blast-report-rgs_X_projectdb-M-Tro -max_hsps 1 -query input/rgs-trps.aa -evalue 1e-3  &
+blastp -db ../../../species16/proteomes/USEME-species16-pep-fastas/OBim.pep -outfmt 6 -out output/3-blast-report-rgs_X_projectdb-O-Bim -max_hsps 1 -query input/rgs-trps.aa -evalue 1e-3  &
+blastp -db ../../../species16/proteomes/USEME-species16-pep-fastas/OEdu.pep -outfmt 6 -out output/3-blast-report-rgs_X_projectdb-O-Edu -max_hsps 1 -query input/rgs-trps.aa -evalue 1e-3  &
+blastp -db ../../../species16/proteomes/USEME-species16-pep-fastas/PCae.pep -outfmt 6 -out output/3-blast-report-rgs_X_projectdb-P-Cae -max_hsps 1 -query input/rgs-trps.aa -evalue 1e-3  &
+blastp -db ../../../species16/proteomes/USEME-species16-pep-fastas/PMax.pep -outfmt 6 -out output/3-blast-report-rgs_X_projectdb-P-Max -max_hsps 1 -query input/rgs-trps.aa -evalue 1e-3  &
+blastp -db ../../../species16/proteomes/USEME-species16-pep-fastas/PPel.pep -outfmt 6 -out output/3-blast-report-rgs_X_projectdb-P-Pel -max_hsps 1 -query input/rgs-trps.aa -evalue 1e-3  &
+blastp -db ../../../species16/proteomes/USEME-species16-pep-fastas/PVul.pep -outfmt 6 -out output/3-blast-report-rgs_X_projectdb-P-Vul -max_hsps 1 -query input/rgs-trps.aa -evalue 1e-3  &
+echo

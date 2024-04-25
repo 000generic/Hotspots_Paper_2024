@@ -1,0 +1,23 @@
+#! /bin/bash
+
+cat output/18*Mytilus* input/* > output/19-Mytilus-RGS.fasta
+cat output/18*Patella* output/18*Crassostrea* input/* > output/19-Crassostrea-Patella-RGS.fasta
+cat output/18*Patella* output/18*Gigantopelta*  output/18*Chrysomallon* output/18*Aplysia*  output/18*Octopus*  input/* > output/19-Gastropoda-Octopus-RGS.fasta
+cat output/18*strea*  output/18*Mytilus*  output/18*Pecten*   output/18*Mya* input/* > output/19-Bivalvia-RGS.fasta
+cat output/18*strea* input/* >  output/19-Ostrea-Crassostrea-RGS.fasta
+cat output/18*Patella*  input/* >  output/19-Patella-RGS.fasta
+
+
+cat output/18*Mytilus* ../../rgs/rgs-TRPs-human-2021dec03.fasta > output/19-Mytilus-human_RGS.fasta
+cat output/18*Patella* output/18*Crassostrea* ../../rgs/rgs-TRPs-human-2021dec03.fasta > output/19-Crassostrea-Patella-human_RGS.fasta
+cat output/18*Patella* output/18*Gigantopelta*  output/18*Chrysomallon* output/18*Aplysia*  output/18*Octopus*  ../../rgs/rgs-TRPs-human-2021dec03.fasta > output/19-Gastropoda-Octopus-human_RGS.fasta
+cat output/18*strea*  output/18*Mytilus*  output/18*Pecten*    output/18*Mya* ../../rgs/rgs-TRPs-human-2021dec03.fasta > output/19-Bivalvia-human_RGS.fasta
+cat output/18*strea* ../../rgs/rgs-TRPs-human-2021dec03.fasta >  output/19-Ostrea-Crassostrea-human_RGS.fasta
+cat output/18*Patella*  ../../rgs/rgs-TRPs-human-2021dec03.fasta >  output/19-Patella-human_RGS.fasta
+
+cat output/18*Aplysia* output/18*Octopus* output/18*Chrysomallon* output/18*Mytilus* input/* > output/19-human-fly-worm-octopus-aplysia-chrysomallon-mytilus-RGS.fasta
+cat output/18*Aplysia* output/18*Octopus* output/18*Chrysomallon* output/18*Mytilus* ../../rgs/rgs-TRPs-human-2021dec03.fasta > output/19-human-octopus-aplysia-chrysomallon-mytilus-human_RGS.fasta
+
+cat output/18*Aplysia* output/18*Octopus* output/18*Chrysomallon* output/18*Giganto* output/18*Mytilus* output/18*gigas* input/* > output/19-human-fly-worm-octopus-aplysia-chrysomallon-gigantopelta-mytilus-crassostrea_gigas-RGS.fasta
+cat output/18*Chrysomallon* output/18*Giganto* output/18*Mytilus* output/18*Crassostrea* input/* > output/19-human-fly-worm-chrysomallon-gigantopelta-mytilus-crassostrea-RGS.fasta
+cat output/18*Aplysia* output/18*Octopus* output/18*Chrysomallon* output/18*Giganto* output/18*Mytilus* output/18*Crassostrea* input/* > output/19-human-fly-worm-octopus-aplysia-chrysomallon-gigantopelta-mytilus-crassostrea-RGS.fasta

@@ -1,0 +1,2 @@
+#! /bin/bash
+blastp -db output/9-rgs-all-genomes-combined.fasta-rgs -outfmt 6 -out output/14-blastp-report-blastp_hits_X_RGS-genome-genomes-combined.fasta  -max_target_seqs 1 -max_hsps 1 -query output/5-blastp-pore-region-hits.fasta -matrix BLOSUM45 -evalue 1e-3 -num_threads 60 &

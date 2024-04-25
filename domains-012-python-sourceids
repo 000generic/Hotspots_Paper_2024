@@ -1,0 +1,77 @@
+#! python
+
+input_idswapper = open( 'input/map-giganticid-to-sourceid', 'r' )
+input_annotations = open( 'output/9-list-parsed-interproscan-files', 'r' )
+
+giganticids_sourceids = {}
+coreids_giganticids = {}
+giganticids_locids = {}
+
+for next_line in input_idswapper:
+    info = next_line[ :-1 ].split( '\t' )
+    species = info[ 0 ]
+    giganticid = info[ 1 ]
+    coreid = giganticid.split( '-' )[ -1 ]
+    sourceid = info[ 3 ]
+    locid = info[ -1 ]
+
+    giganticids_sourceids[ giganticid ] = sourceid
+    coreids_giganticids[ coreid ] = giganticid
+
+    if locid != 'NA':
+        giganticids_locids[ giganticid ] = locid
+
+# output/8-Acanthopleura_seqids-CDD_annotationids_X_global-counts-all-species
+for next_anno_file in input_annotations:
+    input_path = next_anno_file[ :-1 ]
+    input_name = next_anno_file[ :-1 ].split( '/' )[ -1 ]
+    input_core_name = '-'.join( input_name.split( '-' )[ 1: ] )
+    analysis_type = ''
+    if input_name[ 0 ] == '7':
+        analysis_type = 'software'
+    if input_name[ 0 ] == '8':
+        analysis_type = 'species'
+    output_path = 'output/10-' + analysis_type + '/' + '10-' + analysis_type + '-' + input_core_name + '.tsv'
+    input_file = open( input_path, 'r' )
+    output_file = open( output_path, 'w' )
+
+    for next_line in input_file:
+        
+        info = next_line[ :-1 ].split( '\t' )
+        keeper = False
+        counter = -1
+        counter_keeper = ''
+        for next_item in info:
+            
+            counter = counter + 1
+
+            if next_item in giganticids_sourceids.keys():
+
+                keeper = True
+                incoming = next_item
+                outgoing = giganticids_sourceids[ incoming ]
+                if incoming in giganticids_locids.keys():
+                    outgoing = giganticids_locids[ incoming ]
+                counter_keeper = counter
+            elif next_item in coreids_giganticids:
+
+                keeper = True
+                incoming = coreids_giganticids[ next_item ]
+                outgoing = giganticids_sourceids[ incoming ]
+                if incoming in giganticids_locids.keys():
+                    outgoing = giganticids_locids[ incoming ]
+                counter_keeper = counter
+            else:
+                pass
+            
+        if keeper == True:
+            info[ counter_keeper ] = outgoing
+
+        output = '\t'.join( info ) + '\n'
+        output_file.write( output )
+        
+    input_file.close()
+    output_file.close()
+
+input_idswapper.close()
+input_annotations.close()

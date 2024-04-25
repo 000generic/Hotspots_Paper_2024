@@ -1,0 +1,86 @@
+#! python
+
+
+##### USER INPUT
+
+input_fastas = open( 'output/4-list-fastas', 'r' )
+input_hits = open( 'output/15-all-blastp-all-reports', 'r' )
+input_rgs_ids = open( 'output/8-map-source-to-reference-identifiers', 'r' )
+
+output_fasta = open( 'output/16-CGS-final-sequences-by-blastp-RBF.fasta', 'w' )
+output_filtered = open( 'output/16-dropped-queries-no-rgs-top-hit-in-rgs-genome', 'w' )
+
+model_species = [ 'HSap', 'DMel', 'CEle' ]
+
+##### BEGIN SCRIPT
+
+rgs_ids = []
+
+for next_line in input_rgs_ids:
+	info = next_line[ :-1 ].split( '\t' )
+	projectdb_id = info[ 0 ]
+	rgs_id = info[ 1 ]
+	rgs_ids.append( rgs_id )
+	rgs_ids.append( projectdb_id )
+
+keepers = []
+queries = []
+
+for next_hit in input_hits:
+	info = next_hit.split( '\t' )
+	query = info[ 0 ]
+	queries.append( query )
+	hit = info[ 1 ] # Aplysia_californica__LOC101855406__XP_012934963.1  rgs-human-TRPM-bTRPM-TRPM2-uniprotO94759
+	if len( hit.split( '__' ) ) > 1:
+		hit_info = hit.split( '__' )
+		full_name = hit_info[ 0 ]
+		info_full_name = full_name.split( '_' )
+		name = info_full_name[ 0 ] [ 0 ] + info_full_name[ 1 ][ 0 ].upper()  + info_full_name[ 1 ][ 2:4 ]
+	elif  len( hit.split( '-' ) ) > 1:
+		hit_info = hit.split( '-' )
+		if hit_info[ 1 ] == 'human':
+			name = 'HSap'
+		if hit_info[ 1 ] == 'fly':
+                        name = 'DMel'
+		if hit_info[ 1 ] == 'worm':
+                        name = 'CEle'
+	else:
+		name = 'FAIL'
+
+
+	if name in model_species:
+		# drop RGS genes
+		if query in rgs_ids:
+			pass
+		else:
+			keepers.append( query )
+	else:
+		output = query + '\t' + hit + '\n'
+		output_filtered.write( output )
+
+# produce post-filtered keepers diamond fasta NO RGS
+count = 0
+
+for next_fasta in input_fastas:
+	input_fasta = open( next_fasta[ :-1 ], 'r' )
+	for next_line in input_fasta:
+		if next_line[ 0 ] == '>':
+			count = 0
+			identifier = next_line[ 1:-1 ]
+			if identifier in keepers:
+				count = 1
+				header = '>' + identifier + '\n'
+				output_fasta.write( header )
+			else:
+				pass
+		else:
+			if count == 0:
+				pass
+			else:
+				sequence = next_line
+				output_fasta.write( sequence )
+	input_fasta.close()
+input_hits.close()
+input_fastas.close()
+output_fasta.close()
+input_rgs_ids.close()

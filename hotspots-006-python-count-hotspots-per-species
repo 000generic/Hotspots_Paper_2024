@@ -1,0 +1,41 @@
+#! python
+
+input_stats = open( 'output/3-species16-hotspots-1e-60-window200-SHORT', 'r' )
+output_counts = open( 'output/6-hotspots-1e-60-window200-counts-per-species', 'w' )
+
+gspp_hotspots = {}
+gspp_sequences = {}
+gspp_hotspot_size = {}
+
+# Aplysia_californica     hotspot_e60_w200_Aplysia_californica_1  Paralogs_2      Location_NW_004797271.1_1876302_1936033 LOC101857754, LOC101857986
+
+
+for stats in input_stats:
+
+	info_stats = stats.split( '\t' )
+	gspp = info_stats[ 0 ]
+	hotspot_id = info_stats[ 1 ]
+	sequences = info_stats[ 4 ].split( ', ' )
+	hotspot_number = len( sequences )
+
+	if gspp not in gspp_hotspots.keys():
+		gspp_hotspots[ gspp ] = []
+		gspp_sequences[ gspp ] = []
+		gspp_hotspot_size[ gspp ] = 0
+
+	gspp_hotspots[ gspp ].append( hotspot_id )
+
+	for sequence in sequences:
+		gspp_sequences[ gspp ].append( sequence )
+
+	if hotspot_number > gspp_hotspot_size[ gspp ]:
+		gspp_hotspot_size[ gspp ] = hotspot_number
+
+for gspp in sorted( gspp_hotspots.keys() ):
+	hotspots_count = len( list( set( gspp_hotspots[ gspp ] ) ) )
+	genes_count = len( list( set( gspp_sequences[ gspp ] ) ) )
+	biggest_hotspot =  gspp_hotspot_size[ gspp ]
+	output_counts.write(  gspp + '\t' + str( hotspots_count ) + '\t' + str( genes_count ) + '\t' + str( biggest_hotspot ) + '\n' )
+input_stats.close()
+output_counts.close()
+

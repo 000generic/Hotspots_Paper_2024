@@ -1,0 +1,18 @@
+busco -i input/ACal.pep --lineage_dataset metazoa_odb10 --mode protein -o ACal --out_path output --cpu 30 --force && 
+busco -i input/CEle.pep --lineage_dataset metazoa_odb10 --mode protein -o CEle --out_path output --cpu 30 --force && 
+busco -i input/CGig.pep --lineage_dataset metazoa_odb10 --mode protein -o CGig --out_path output --cpu 30 --force && 
+busco -i input/CSqu.pep --lineage_dataset metazoa_odb10 --mode protein -o CSqu --out_path output --cpu 30 --force && 
+busco -i input/CVir.pep --lineage_dataset metazoa_odb10 --mode protein -o CVir --out_path output --cpu 30 --force && 
+busco -i input/DMel.pep --lineage_dataset metazoa_odb10 --mode protein -o DMel --out_path output --cpu 30 --force && 
+busco -i input/GAeg.pep --lineage_dataset metazoa_odb10 --mode protein -o GAeg --out_path output --cpu 30 --force && 
+busco -i input/HSap.pep --lineage_dataset metazoa_odb10 --mode protein -o HSap --out_path output --cpu 30 --force && 
+busco -i input/MAre.pep --lineage_dataset metazoa_odb10 --mode protein -o MAre --out_path output --cpu 30 --force && 
+busco -i input/MTro.pep --lineage_dataset metazoa_odb10 --mode protein -o MTro --out_path output --cpu 30 --force && 
+busco -i input/OBim.pep --lineage_dataset metazoa_odb10 --mode protein -o OBim --out_path output --cpu 30 --force && 
+busco -i input/OEdu.pep --lineage_dataset metazoa_odb10 --mode protein -o OEdu --out_path output --cpu 30 --force && 
+busco -i input/PCae.pep --lineage_dataset metazoa_odb10 --mode protein -o PCae --out_path output --cpu 30 --force && 
+busco -i input/PMax.pep --lineage_dataset metazoa_odb10 --mode protein -o PMax --out_path output --cpu 30 --force && 
+busco -i input/PPel.pep --lineage_dataset metazoa_odb10 --mode protein -o PPel --out_path output --cpu 30 --force && 
+busco -i input/PVul.pep --lineage_dataset metazoa_odb10 --mode protein -o PVul --out_path output --cpu 30 --force && 
+busco -i input/TGra.pep --lineage_dataset metazoa_odb10 --mode protein -o TGra --out_path output --cpu 30 --force && 
+echo

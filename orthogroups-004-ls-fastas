@@ -1,0 +1,4 @@
+#! /bin/bash
+
+ls -1 ../species16/proteomes/USEME-species16-pep-fastas/*pep > output/4-list-fastas
+

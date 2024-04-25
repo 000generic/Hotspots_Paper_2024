@@ -1,0 +1,18 @@
+#! python
+
+input_list = open( 'output/9-list-RGS-header-reference-genome-fastas', 'r' )
+output_makedb = open( '011-blastp-makedb', 'w' )
+
+for next_fasta in input_list:
+
+    fasta_path = next_fasta[ :-1 ]
+    fasta = fasta_path.split( '/' )[ -1 ]
+    
+    db_name = fasta.split( '.' )[ 0 ] + '-AA'
+    
+    command = 'makeblastdb -in '  + fasta_path + ' -dbtype prot'
+    output = command + '\n'
+    output_makedb.write( output )
+
+input_list.close()
+output_makedb.close()

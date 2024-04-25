@@ -1,0 +1,42 @@
+#! python
+
+input_stats = open( 'output/5-gspp-trp-hotspots-stats-1e60-window20', 'r')
+output_stats = open( 'output/7-summary-stats-trps-hotspots-1e-60-window20-gspp', 'w' )
+
+# output/5-gspp-trp-hotspots-stats
+# rgs-worm-TRPM-bTRPM-gtl2-uniprotQ20766  HOTSPOT_Location_NC_003282.8_11248884_11281992_Paralogs_2
+# rgs-worm-TRPA-TRPA1like-trpa1-uniprotQ18297     HOTSPOT_None
+# Crassostrea_gigas__LOC105335227__XP_034339215.1 HOTSPOT_Location_NC_047559.1_40118678_40331941_Paralogs_5
+
+gspp_trp_sequences = {}
+gspp_trp_hotspot_sequences = {}
+gspp_hotspots = {}
+for stats in input_stats:
+    info = stats[ :-1 ].split( '\t' )
+    sequence = info[ 0 ]
+    hotspot = info[ 1 ]
+    gspp = sequence.split( '__' )[ 0 ]
+    if len(gspp.split( '-' ) ) > 2:
+        gspp = gspp.split( '-' )[ 1 ]
+
+    if gspp not in gspp_trp_sequences.keys():
+        gspp_trp_sequences[ gspp ] = []
+        gspp_hotspots[ gspp ] = []
+        gspp_trp_hotspot_sequences[ gspp ] = []
+
+    gspp_trp_sequences[ gspp ].append( sequence )
+
+    if hotspot.split( '_' )[ -1] == 'None':
+        continue
+    else:
+        gspp_hotspots[ gspp ].append( hotspot )
+        gspp_trp_hotspot_sequences[ gspp ].append( sequence )
+
+for gspp in gspp_hotspots.keys():
+    trp_sequence_count = str( len( list( set( gspp_trp_sequences[ gspp ] ) ) ) )
+    trp_hotspot_count = str( len( list( set( gspp_hotspots[ gspp ] ) ) ) )
+    trp_hotspot_sequences_count = str( len( list( set( gspp_trp_hotspot_sequences[ gspp ] ) ) ) )
+    output_stats.write( gspp + '\t' + trp_sequence_count + '\t' + trp_hotspot_sequences_count + '\t' +  trp_hotspot_count + '\n' )
+
+input_stats.close()
+output_stats.close()

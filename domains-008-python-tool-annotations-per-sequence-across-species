@@ -1,0 +1,127 @@
+#! python
+
+input_map = open( 'output/7-species-summary-sequence-annotation-counts', 'r' )
+input_pfam = open( 'toolkit-pfam-descriptions/map-pfamids-symbols-descriptions', 'r' )
+input_panther = open( 'toolkit-panther-descriptions/map-pantherids-name-description', 'r' )
+input_prosite = open( 'toolkit-prosite-descriptions/map-prositeid-description', 'r' )
+input_go = open( 'toolkit-go-descriptions/map-goid-namespace-description', 'r' )
+input_smart = open( 'toolkit-smart-description/map-smart-description', 'r' )
+
+# PF10417 1-cysPrx_C      C-terminal domain of 1-Cys peroxiredoxin
+pfams_descriptions = {}
+for next_line in input_pfam:
+    info = next_line[ :-1 ].split( '\t' )
+    pfam = info[ 0 ]
+    symbol = info[ 1 ]
+    description = info[ 2 ]
+    symbol_description = symbol + ' ' + description
+    pfams_descriptions[ pfam ] = symbol_description
+
+# PTHR45618:SF8   MITOCHONDRIAL UNCOUPLING PROTEIN 4
+panthers_descriptions = {}
+for next_line in input_panther:
+    info = next_line[ :-1 ].split( '\t' )
+    panther = info[ 0 ]
+    description = info[ 1 ]
+    panthers_descriptions[ panther ] = description
+
+# PS00052 Ribosomal protein S7 signature.
+prosites_descriptions = {}
+for next_line in input_prosite:
+    info = next_line[ :-1 ].split( '\t' )
+    prosite = info[ 0 ]
+    description = info[ 1 ]
+    prosites_descriptions[ prosite ] = description
+
+# GO:0000001      biological_process: The distribution of mitochondria, including the mitochondrial genome, into daughter cells after mitosis or meiosis, mediated by interactions between mitochondria and the cytoskeleton.
+go_descriptions = {}
+for next_line in input_go:
+    info = next_line[ :-1 ].split( '\t' )
+    go = info[ 0 ]
+    description = info[ 1 ]
+    go_descriptions[ go ] = description
+    
+# SM00101 14_3_3 14-3-3 homologues 14-3-3 homologues mediates signal transduction by binding to phosphoserine-containing proteins. They are involved in growth factor signalling and also interact with MEK kinases.
+smarts_descriptions = {}
+for next_line in input_smart:
+    info = next_line[ :-1 ].split( '\t' )
+    smart = info[ 0 ]
+    description = info[ 1 ]
+    smarts_descriptions[ smart ] = description
+
+# Metazoa-Mollusca-Polyplacophora-Chitonida-Chitonidae-Acanthopleura-granulata-gigantic20220627164247_seq0006647948aa     Coils_Coil      7875    8466    8681    7475    5823    7232    12806   10934   5914    7702    8327    10305   11964   5863       9797    5734    6163    8438    8643
+species_tool_details = {}
+first = False
+for next_line in input_map:
+
+    info = next_line[ :-1 ].split( '\t' )
+
+    if first == False:
+        first = True
+        species_list = []
+        for next_species in info[ 2: ]:
+            species_tool_details[ next_species ] = {}
+            species_list.append( next_species )
+            
+    else:
+        
+        giganticid = info[ 0 ].split( '-' )[ -1 ]
+        species = info[ 0 ].split( '-' )[ 5 ]
+        annotationid = '_'.join( info[ 1 ].split( '_' )[ 1: ] )
+        annotation_tool = info[ 1 ].split( '_' )[ 0 ]
+        
+        if annotation_tool in species_tool_details[ species ].keys():
+            pass
+        else:
+            species_tool_details[ species ][ annotation_tool ] = []
+        
+        if annotation_tool == 'Pfam':
+            description = pfams_descriptions[ annotationid ]
+        elif annotation_tool == 'PANTHER':
+            description = panthers_descriptions[ annotationid ]
+        elif annotation_tool == 'PROSITE':
+            description = prosites_descriptions[ annotationid ]
+        elif annotation_tool == 'GO':
+            description = go_descriptions[ annotationid ]
+        elif annotation_tool == 'SMART':
+            if annotationid in smarts_descriptions.keys():
+                description = smarts_descriptions[ annotationid ]
+            else:
+                print( 'Not in SMART map:' )
+                print( info )
+        else:
+            description = 'NA'
+
+        details = species + '\t' + annotation_tool + '\t' + giganticid + '\t' + annotationid + '\t' + description + '\t'
+
+        for next_count in info[ 2: ]:
+            details = details + next_count + '\t'
+
+        details = details[ :-1 ]
+        species_tool_details[ species ][ annotation_tool ].append( details )
+
+output = 'Species' + '\t' +  'Annotation Tool' + '\t' + 'GIGANTIC ID' + '\t' + 'Annotation ID' + '\t' + 'Annotation Description' + '\t'
+for next_species in species_list:
+    output = output + next_species + '\t'
+output_header = output[ :-1 ] + '\n'
+
+for next_species in species_list:
+    for next_tool in species_tool_details[ next_species ].keys():
+        
+        output_filename = 'output/8-software-' + next_species + '_seqids-' + next_tool + '_annotationids_X_global-counts-all-species'
+        output_file = open( output_filename, 'w' )
+
+        output_file.write( output_header )
+        
+        for next_detail in sorted( species_tool_details[ next_species ][ next_tool ] ):
+            output = next_detail + '\n'
+            output_file.write( output )
+
+        output_file.close()
+
+input_map.close()
+input_pfam.close()
+input_panther.close()
+input_prosite.close()
+input_go.close()
+input_smart.close()

@@ -1,0 +1,114 @@
+#! python
+
+input_gigantic = open( 'output/4-list-trees-gigantic', 'r' )
+input_orthogroups = open( 'output/4-list-trees-gigantic-orthogroups', 'r' )
+input_neighbors = open( 'output/3-species16-hotspots-1e-60-window20-SHORT', 'r' )
+input_fastas =  open( 'output/4-list-fastas', 'r' )
+input_map = open( '../../../gigantic/homologs-all_trps/blastp/output/8-map-source-to-reference-identifiers', 'r' )
+output_stats = open( 'output/5-gspp-trp-hotspots-stats-1e60-window20', 'w' )
+
+
+rgs_seqids = {}
+seqids_rgs = {}
+clean_rgs_rgs = {}
+for data in input_map:
+	info = data[ :-1 ].split( '\t' )
+	rgs = info[ 1 ]
+	rgs_clean  = '_'.join( rgs.split( '-' ) ) # to match clean up used for MAFFT in tree building
+	rgs_clean = 'X'.join( rgs_clean.split( 'U' ) ) # to match clean up used for MAFFT in tree building
+	seqid = info[ 0 ]
+	rgs_seqids[ rgs_clean ] = seqid
+	seqids_rgs[ seqid ] = rgs_clean
+	clean_rgs_rgs[ rgs_clean ] = rgs
+
+cleangeneids_sequenceids = {}
+cleangeneids_cleansequenceids = {}
+sequenceids_cleansequnceids = {}
+for fasta in input_fastas:
+	input_fasta = open( fasta[ :-1 ], 'r' )
+	for data in input_fasta:
+		if data[ 0 ] == '>':
+			sequenceid = data[ 1:-1 ]
+			clean_sequenceid = '_'.join( sequenceid.split( '-' ) ) # to match clean up used for MAFFT in tree building
+			clean_sequenceid = 'X'.join( clean_sequenceid.split( 'U' ) ) # to match clean up used for MAFFT in tree building
+			info_sequence = clean_sequenceid.split( '__' )
+			gspp = info_sequence[ 0 ]
+			clean_geneid = gspp + '__' + info_sequence[ 1 ]
+			cleangeneids_sequenceids[ clean_geneid ] = sequenceid
+			cleangeneids_cleansequenceids[ clean_geneid ] = clean_sequenceid
+			sequenceids_cleansequnceids[ sequenceid ] = clean_sequenceid
+
+clean_geneids_hotspots = {}
+# Aplysia_californica     hotspot_e60_w200_Aplysia_californica_12 Size_3  Location_NW_004797272.1_4394206_4656058 LOC106014199, LOC118477191, LOC101855535
+for neighbor in input_neighbors:
+	info = neighbor[ :-1 ].split( '\t' )
+	gspp = info [0 ]
+	genes = info[ 4 ].split( ', ' )
+	for gene in genes:
+		geneid = gspp + '__' + gene
+		clean_geneid = '_'.join( geneid.split( '-' ) ) # to match clean up used for MAFFT in tree building
+		clean_geneid = 'X'.join( clean_geneid.split( 'U' ) ) # to match clean up used for MAFFT in tree building
+		hotspot = 'HOTSPOT_' + info[ 3 ] +'_' +  info[ 2 ]
+		clean_geneids_hotspots[ clean_geneid ] = hotspot
+
+for tree_file in input_orthogroups:
+	input_tree = open( tree_file[ :-1 ], 'r' )
+	new_file = tree_file[ :-1 ] + '_hotspots'
+	output_tree = open( new_file, 'w' )
+
+	for tree in input_tree:
+		for clean_geneid in cleangeneids_cleansequenceids.keys():
+			cleansequenceid = cleangeneids_cleansequenceids[ clean_geneid ]
+			sequenceid = cleangeneids_sequenceids[ clean_geneid ]
+			if sequenceid in seqids_rgs.keys():
+				clean_rgs = seqids_rgs[ sequenceid ] # set original gigantic sequence id to rgs id
+				sequenceid = clean_rgs_rgs[ clean_rgs ]
+			if len( tree.split( cleansequenceid )) > 1 or len( tree.split( sequenceid )) > 1:
+				if clean_geneid in clean_geneids_hotspots.keys():
+					hotspot = clean_geneids_hotspots[ clean_geneid ]
+				else:
+					hotspot = 'HOTSPOT_None'
+
+				sequence_hotspot = sequenceid + '__' + hotspot
+				if len( tree.split( cleansequenceid )) > 1:
+					tree = sequence_hotspot.join( tree.split( cleansequenceid ) )
+				elif len( tree.split( sequenceid )) > 1:
+                                        tree = sequence_hotspot.join( tree.split( sequenceid ) )
+		output_tree.write( tree )
+	input_tree.close()
+	output_tree.close()
+
+# KXTeg_023902    Tegillarca_granosa__KUTeg_023902__KAJ8298559.1  Tegillarca_granosa__KUTeg_023902__KAJ8298559.1
+
+for tree_file in input_gigantic:
+	input_tree = open( tree_file[ :-1 ], 'r' )
+	new_file = tree_file[ :-1 ] + '_hotspots'
+	output_tree = open( new_file, 'w' )
+
+	for tree in input_tree:
+		for clean_geneid in cleangeneids_cleansequenceids.keys():
+			cleansequenceid = cleangeneids_cleansequenceids[ clean_geneid ]
+			sequenceid = cleangeneids_sequenceids[ clean_geneid ]
+			if sequenceid in seqids_rgs.keys(): 
+				cleansequenceid = seqids_rgs[ sequenceid ] # set original gigantic sequence id to rgs id
+				sequenceid = clean_rgs_rgs[ cleansequenceid ]
+			if len( tree.split( cleansequenceid )) > 1:
+				if clean_geneid in clean_geneids_hotspots.keys():
+					hotspot = clean_geneids_hotspots[ clean_geneid ]
+				else:
+					hotspot = 'HOTSPOT_None'
+				output_stats.write( sequenceid + '\t' + hotspot + '\n' )
+				sequence_hotspot = sequenceid + '__' + hotspot
+				if len( tree.split( cleansequenceid )) > 1:
+					tree = sequence_hotspot.join( tree.split( cleansequenceid ) )
+				else:
+					print( 'There might be a problem...' )  # check ME
+		output_tree.write( tree )
+	input_tree.close()
+	output_tree.close()
+
+input_gigantic.close()
+input_orthogroups.close()
+input_neighbors.close()
+input_fastas.close()
+output_stats.close()

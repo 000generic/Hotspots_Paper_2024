@@ -1,0 +1,3 @@
+#! /bin/bash
+
+cat output/14-* > output/15-all-blastp-all-reports

@@ -1,0 +1,7 @@
+#! /bin/bash
+
+# busco -i input/ACal.pep --lineage_dataset metazoa_odb10 --mode genome -o PPel_genome --out_path output --cpu 10 --force && 
+
+#busco -i input/pellucida/ncbi_dataset/data/GCA_917208275.1/GCA_917208275.1_xgPatPell1.1_genomic.fna --lineage_dataset metazoa_odb10 --mode genome -o PPel_genome --out_path output --cpu 30 --force && 
+#busco -i input/carulea/ncbi_dataset/data/GCA_036850965.1/GCA_036850965.1_PatCaer1_genomic.fna  --lineage_dataset metazoa_odb10 --mode genome -o PCae_genome --out_path output --cpu 30 --force 
+busco -i input/chrysomallon/ncbi_dataset/data/GCA_012295275.1/GCA_012295275.1_Csq_v1.1.fa_genomic.fna --lineage_dataset metazoa_odb10 --mode genome -o CSqu_genome --out_path output --cpu 30 --force

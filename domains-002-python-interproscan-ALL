@@ -1,0 +1,21 @@
+#! python                                                                                                                                                                                                                                
+# /home/eedsinger/software/interproscan/interproscan-5.48-83.0/interproscan.sh --applications Pfam --input  ../species311/species311-fastas/*Acanthopleura-granulata*aa --cpu 45 --disable-precalc                                      
+
+input_fastas = open( 'output/1-list-fastas', 'r' )
+output_command = open( '003-interproscan-all-apps-all-species', 'w' )
+
+# ../../species17/proteomes/USEME-species17-pep-fastas/ACal.pep
+for next_fasta in input_fastas:
+
+    fasta = next_fasta[ :-1 ]
+    info = fasta.split( '/' )[ -1 ]
+    info_2 = info.split( '.' )
+    gspp = info_2[ 0 ][ 1 ] + '_' + info_2[ 0 ][ 1 ].lower() + info_2[ 0 ][ 2 ] + info_2[ 0 ] [ 3 ]
+
+    output = 'interproscan.sh --input ' + fasta + ' --cpu 16 --goterms --disable-precalc --formats tsv -appl Pfam Panther && \n'
+    output_command.write( output )
+output = 'echo\n'
+output_command.write( output )
+
+input_fastas.close()
+output_command.close()

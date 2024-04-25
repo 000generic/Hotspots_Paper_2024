@@ -1,0 +1,3 @@
+#! /bin/bash
+
+ls -1 output/9-rgs-all-genomes-combined.fasta-rgs > output/12-list-blastp-annotated-rgs-genomes

@@ -1,0 +1,3 @@
+#! /bin/bash
+
+cat ../../rgs/rgs-TRPs-human-fly-worm-2021dec03.fasta output/16-CGS-final-sequences-by-blastp-RBF.fasta > output/17-AGS_blastp-rgs-TRPs_X_species16.aa

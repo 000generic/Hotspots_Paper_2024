@@ -1,0 +1,23 @@
+#! python
+
+# input_list
+# 11-projectdb-Homo-sapiens-cgs-AA.dmnd
+
+input_list = open( 'output/12-list-blastp-annotated-rgs-genomes', 'r' )
+output_command = open( '014-blastp-hits_X_RGS-genomes', 'w' )
+
+output = '#! /bin/bash\n'
+output_command.write( output )
+
+for next_line in input_list:
+
+    db_path = next_line[ :-1 ]
+    info = db_path.split( '-' )
+    genome = info[ -3 ] + '-' + info[ -2 ]
+
+    output =  'blastp -db ' + db_path  + ' -outfmt 6 -out output/14-blastp-report-blastp_hits_X_RGS-genome-' + genome + '  -max_target_seqs 1 -max_hsps 1 -query output/5-blastp-pore-region-hits.fasta -matrix BLOSUM45 -evalue 1e-3 -num_threads 60 &\n'
+ 
+    output_command.write( output )
+
+input_list.close()
+output_command.close()

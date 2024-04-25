@@ -1,0 +1,4 @@
+#! /bin/bash
+
+cat output/*/short_summary*txt  > output/4-busco-short-summaries
+

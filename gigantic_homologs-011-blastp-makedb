@@ -1,0 +1,1 @@
+makeblastdb -in output/9-rgs-all-genomes-combined.fasta-rgs -dbtype prot

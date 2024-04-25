@@ -1,0 +1,4 @@
+#! /bin/bash
+
+ls output/3-blast-report-rgs_X_projectdb-* > output/4-list-reports
+ls ../../../species16/proteomes/USEME-species16-pep-fastas/*pep > output/4-list-fastas

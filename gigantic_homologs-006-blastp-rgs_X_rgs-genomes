@@ -1,0 +1,7 @@
+#! /bin/bash
+
+blastp -db ../../../species16/proteomes/USEME-species16-pep-fastas/HSap.pep -query input/rgs*.aa -out output/6-blast-report-rgs-trps-family_X_human-genome -outfmt 6  -max_hsps 1
+
+blastp -db ../../../species16/proteomes/USEME-species16-pep-fastas/DMel.pep -query input/rgs*.aa -out output/6-blast-report-rgs-trps-family_X_fly-genome -outfmt 6  -max_hsps 1
+
+blastp -db ../../../species16/proteomes/USEME-species16-pep-fastas/CEle.pep -query input/rgs*.aa -out output/6-blast-report-rgs-trps-family_X_worm-genome -outfmt 6  -max_hsps 1

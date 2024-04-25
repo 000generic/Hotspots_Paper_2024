@@ -1,0 +1,60 @@
+#! python 
+
+input_domains = open( 'input/13-dark-matter-seqids', 'r' )
+input_blast = open( 'input/4-blast-genetic-models-dark-matter-seqids', 'r' )
+input_orthogroups = open( 'input/5-species16-orthofinder-dark-matter-seqids', 'r' )
+output_seqids = open(  'output/7-species16-genomic-dark-matter-final-seqids', 'w' )
+output_counts = open( 'output/7-species16-genomic-dark-matter-final-counts', 'w' )
+
+dark_domains = []
+for dark in input_domains:
+	dark = dark.split( '\t' )[ -1 ]
+	dark_domains.append( dark[ :-1 ] )
+
+dark_blasts = []
+for dark in input_blast:
+	dark = dark.split( '\t' )[ -1 ]
+	dark_blasts.append( dark [ :-1 ] )
+
+dark_orthogroups = []
+for dark in input_orthogroups:
+	dark = dark.split( '\t' )[ -1 ]
+	dark_orthogroups.append(  dark[ :-1 ] )
+
+genomic_dark_matter = []
+
+for dark in dark_domains:
+	if dark in dark_blasts and  dark in dark_orthogroups:
+		genomic_dark_matter.append( dark )
+
+for dark in dark_blasts:
+	if dark in dark_domains and  dark in dark_orthogroups:
+		if dark not in genomic_dark_matter:
+			genomic_dark_matter.append( dark )
+
+for dark in dark_orthogroups:
+	if dark in dark_domains and  dark in dark_blasts:
+		if dark not in genomic_dark_matter:
+			genomic_dark_matter.append( dark )
+
+for dark in genomic_dark_matter:
+	output_seqids.write( dark + '\n' )
+
+gspp_dark = {}
+for dark in genomic_dark_matter:
+	info = dark.split( '__' )
+	gspp = info[ 0 ]
+	if gspp not in gspp_dark.keys():	
+		gspp_dark[ gspp ] = []
+	gspp_dark[ gspp ].append( dark )
+
+for gspp in  sorted ( gspp_dark.keys()):
+	dark_count = str( len( gspp_dark[ gspp ] ) )
+	output_counts.write( gspp + '\t' + dark_count + '\n' )
+
+input_domains.close()
+input_blast.close()
+input_orthogroups.close()
+output_seqids.close()
+output_counts.close()
+

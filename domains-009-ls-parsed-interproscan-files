@@ -1,0 +1,5 @@
+#! /bin/bash
+
+#ls -1 output/7* > output/9-list-parsed-interproscan-files
+#ls -1 output/8* >> output/9-list-parsed-interproscan-files
+ls -1 output/8* > output/9-list-parsed-interproscan-files_8
